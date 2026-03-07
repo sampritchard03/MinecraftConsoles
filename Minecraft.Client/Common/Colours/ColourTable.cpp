@@ -319,6 +319,9 @@ wchar_t *ColourTable::ColourTableElements[eMinecraftColour_COUNT] =
 	L"Color_EnchantTextFocus",
 	L"Color_EnchantTextDisabled",
 	L"Color_RenamedItemTitle",
+
+	L"Color_Lizard1",
+	L"Color_Lizard2"
 };
 
 void ColourTable::staticCtor()
@@ -357,6 +360,11 @@ void ColourTable::loadColoursFromData(PBYTE pbData, DWORD dwLength)
 		setColour(colourId, colourValue);
 		auto it = s_colourNamesMap.find(colourId); // ?
 	}
+
+	// loading extra modded colors
+
+	setColour(L"Color_Lizard1", 0xFF0000);
+	setColour(L"Color_Lizard2", 0x0000FF);
 
 	bais.reset();
 }

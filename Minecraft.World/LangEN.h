@@ -19,12 +19,17 @@ constexpr int ID_PLANKS_LIGHTBLUE = 5012;
 constexpr int ID_PLANKS_MAGENTA = 5013;
 constexpr int ID_PLANKS_ORANGE = 5014;
 constexpr int ID_PLANKS_WHITE = 5015;
+constexpr int ID_LIZARD_TAIL = 5016;
 
 // ITEM DESCRIPTIONS
 constexpr int DESC_PLANKS = 5100;
 constexpr int DESC_PLANKS_COLORED = 5101;
+constexpr int DESC_LIZARD_TAIL = 5102;
 
 // ENTITY NAMES
 constexpr int ID_LIZARD = 5200;
+
+//ENTITY DESCRIPTIONS
+constexpr int DESC_LIZARD = 5300;
 
 extern const std::unordered_map<int, const wchar_t*> g_names;

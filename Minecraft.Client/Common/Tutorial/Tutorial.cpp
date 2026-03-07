@@ -17,6 +17,7 @@
 #include "TutorialTasks.h"
 #include "TutorialConstraints.h"
 #include "TutorialHints.h"
+#include "..\Minecraft.World\LangEN.h"
 
 vector<int> Tutorial::s_completableTasks;
 
@@ -827,7 +828,7 @@ Tutorial::Tutorial(int iPad, bool isFullTutorial /*= false*/) : m_iPad( iPad )
 	if(!isHintCompleted(e_Tutorial_Hint_Witch)) addHint(e_Tutorial_State_Gameplay, new LookAtEntityHint(e_Tutorial_Hint_Witch, this, IDS_DESC_WITCH, IDS_WITCH, eTYPE_WITCH) );
 	if(!isHintCompleted(e_Tutorial_Hint_Bat)) addHint(e_Tutorial_State_Gameplay, new LookAtEntityHint(e_Tutorial_Hint_Bat, this, IDS_DESC_BAT, IDS_BAT, eTYPE_BAT) );
 	if(!isHintCompleted(e_Tutorial_Hint_Horse)) addHint(e_Tutorial_State_Gameplay, new LookAtEntityHint(e_Tutorial_Hint_Horse, this, IDS_DESC_HORSE, IDS_HORSE, eTYPE_HORSE) );
-
+	if(!isHintCompleted(e_Tutorial_Hint_Lizard)) addHint(e_Tutorial_State_Gameplay, new LookAtEntityHint(e_Tutorial_Hint_Lizard, this, DESC_LIZARD, ID_LIZARD, eTYPE_LIZARD) );
 
 	/*
 	* ITEM HINTS

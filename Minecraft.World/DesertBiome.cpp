@@ -10,6 +10,9 @@ DesertBiome::DesertBiome(int id) : Biome(id)
 	friendlies.clear();
 	friendlies_chicken.clear();	// 4J added
 	friendlies_wolf.clear(); 	// 4J added
+
+	friendlies.push_back(new MobSpawnerData(eTYPE_LIZARD, 10, 1, 2));
+
 	topMaterial = (BYTE) Tile::sand_Id;
 	material = (BYTE) Tile::sand_Id;
 

@@ -2,6 +2,7 @@
 #include "LizardModel.h"
 #include "..\Minecraft.World\Mth.h"
 #include "ModelPart.h"
+#include "..\Minecraft.World\Lizard.h"
 
 LizardModel::LizardModel() : Model()
 {
@@ -48,6 +49,13 @@ LizardModel::LizardModel() : Model()
     leg3->compile(1.0f/16.0f);
 }
 
+void LizardModel::renderTail(shared_ptr<Entity> entity, float scale, bool usecompiled) {
+	auto lizard = std::dynamic_pointer_cast<Lizard>(entity);
+	if (lizard && lizard->hasTail()) {
+		tail->render(scale, usecompiled);
+	}
+}
+
 void LizardModel::render(shared_ptr<Entity> entity, float time, float r, float bob, float yRot, float xRot, float scale, bool usecompiled)
 {
     setupAnim(time, r, bob, yRot, xRot, scale, entity);
@@ -63,7 +71,7 @@ void LizardModel::render(shared_ptr<Entity> entity, float time, float r, float b
 		glScalef(1 / ss, 1 / ss, 1 / ss);
 		glTranslatef(0, 24 * scale, 0);
 		body->render(scale, usecompiled);
-		tail->render(scale, usecompiled);
+		LizardModel::renderTail(entity, scale, usecompiled);
 		leg0->render(scale, usecompiled);
 		leg1->render(scale, usecompiled);
 		leg2->render(scale, usecompiled);
@@ -74,7 +82,7 @@ void LizardModel::render(shared_ptr<Entity> entity, float time, float r, float b
 	{
 		head->render(scale, usecompiled);
 		body->render(scale, usecompiled);
-		tail->render(scale, usecompiled);
+		LizardModel::renderTail(entity, scale, usecompiled);
 		leg0->render(scale, usecompiled);
 		leg1->render(scale, usecompiled);
 		leg2->render(scale, usecompiled);

@@ -9,12 +9,15 @@ class Lizard : public Animal
 public:
 	eINSTANCEOF GetType() { return eTYPE_LIZARD; }
 	static Entity *create(Level *level) { return new Lizard(level); }
+	int shedTime;
+	int tailTime;
+	bool hasDropped;
 private:
 	static const int DATA_TAIL_ID = 16;
 
 public:
 	Lizard(Level *level);
-
+	virtual bool canSpawn();
 	virtual bool useNewAi();
 
 protected:
@@ -25,6 +28,7 @@ protected:
 	virtual void defineSynchedData();
 
 public:
+	virtual bool hurt(DamageSource *source, float dmg);
 	virtual void addAdditonalSaveData(CompoundTag *tag);
 	virtual void readAdditionalSaveData(CompoundTag *tag);
 
@@ -35,10 +39,10 @@ protected:
 	virtual void playStepSound(int xt, int yt, int zt, int t);
 
 protected:
-	virtual int getDeathLoot();
 	virtual void dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel);
 
 public:
+	bool dropTail(shared_ptr<LivingEntity> attacker);
 	bool hasTail();
 	void setTail(bool value);
 

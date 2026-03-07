@@ -21,13 +21,19 @@ const std::unordered_map<int, const wchar_t*> g_names = {
     {ID_PLANKS_MAGENTA, L"Magenta Wood Planks"},
     {ID_PLANKS_ORANGE, L"Orange Wood Planks"},
     {ID_PLANKS_WHITE, L"White Wood Planks"},
+    {ID_LIZARD_TAIL, L"Lizard Tail"},
 
     // ITEM DESCRIPTIONS
 
     {DESC_PLANKS, L"Used as a building material and can be crafted into many things, and can be dyed different colors. Can be crafted from any form of wood."},
     {DESC_PLANKS_COLORED, L"A colorful material used as a building block. Can be crafted from any form of wood."},
+    {DESC_LIZARD_TAIL, L"Restores 1{*ICON_SHANK_01*}, or can be cooked in a furnace. A small ration scared out of a lizard."},
 
     // ENTITY NAMES
 
-    {ID_LIZARD, L"Lizard"}
+    {ID_LIZARD, L"Lizard"},
+
+    // ENTITY DESCRIPTIONS (HINTS)
+
+    {DESC_LIZARD, L"A small reptile found in deserts. It drops its tail when scared, and sheds its skin. Once befriended by feeding it crickets, it can ride on top of your head."}
 };

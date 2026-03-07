@@ -9,6 +9,7 @@
 #include "net.minecraft.world.entity.ai.attributes.h"
 #include "net.minecraft.world.entity.ai.goal.h"
 #include "net.minecraft.world.entity.ai.navigation.h"
+#include "net.minecraft.world.damagesource.h"
 #include "net.minecraft.world.entity.item.h"
 #include "net.minecraft.world.entity.monster.h"
 #include "net.minecraft.world.entity.player.h"
@@ -27,18 +28,51 @@ Lizard::Lizard(Level *level) : Animal( level )
 	registerAttributes();
 	setHealth(getMaxHealth());
 
-	setSize(0.9f, 0.9f);
+	shedTime = random->nextInt(20 * 60 * 5) + 20 * 60 * 7;
+	tailTime = 0;
+	hasDropped = false;
+
+	setSize(0.8F, 0.4F);
 
 	getNavigation()->setAvoidWater(true);
 	goalSelector.addGoal(0, new FloatGoal(this));
 	goalSelector.addGoal(1, new PanicGoal(this, 1.25));
 	goalSelector.addGoal(3, new BreedGoal(this, 1.0));
-	goalSelector.addGoal(4, new TemptGoal(this, 1.2, Item::carrotOnAStick_Id, false));
 	goalSelector.addGoal(4, new TemptGoal(this, 1.2, Item::carrots_Id, false));
 	goalSelector.addGoal(5, new FollowParentGoal(this, 1.1));
 	goalSelector.addGoal(6, new RandomStrollGoal(this, 1.0));
 	goalSelector.addGoal(7, new LookAtPlayerGoal(this, typeid(Player), 6));
 	goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+}
+
+bool Lizard::canSpawn() {
+	int xt = Mth::floor(x);
+	int yt = Mth::floor(bb->y0);
+	int zt = Mth::floor(z);
+	return level->getTile(xt, yt - 1, zt) == Tile::sand_Id && level->getDaytimeRawBrightness(xt, yt, zt) > 8 && AgableMob::canSpawn();
+}
+
+bool Lizard::hurt(DamageSource *dmgSource, float dmg)
+{
+	if (dynamic_cast<EntityDamageSource *>(dmgSource) != NULL && dropTail(dynamic_pointer_cast<LivingEntity>(dmgSource->getDirectEntity()))) dmg -= 2;
+	if (dmg <= 0) return false;
+
+	return Animal::hurt(dmgSource, dmg);
+}
+
+bool Lizard::dropTail(shared_ptr<LivingEntity> attacker) {
+	if (hasTail()) {
+		if (level->isClientSide || hasDropped) return true; // hasDropped exists because sometimes hurt() is called more than once when you hit something.
+
+		if (isOnFire()) spawnAtLocation(Item::porkChop_cooked_Id, 1);
+		else spawnAtLocation(Item::lizardTail_Id, 1);
+		playSound( eSoundType_MOB_CHICKENPLOP, 1.0f, (random->nextFloat() - random->nextFloat()) * 0.2f + 1.0f);
+		tailTime = random->nextInt(20 * 60 * 5) + 20 * 60 * 5;
+		hasDropped = true;
+		setLastHurtByMob(attacker);
+
+		return true;
+	} else return false;
 }
 
 bool Lizard::useNewAi()
@@ -57,6 +91,19 @@ void Lizard::registerAttributes()
 void Lizard::newServerAiStep()
 {
 	Animal::newServerAiStep();
+
+	if (!level->isClientSide) {
+		setTail(tailTime <= 0);
+		if (!hasTail()) {
+			tailTime--;
+		}
+		hasDropped = false;
+		if (--shedTime <= 0) {
+			playSound( eSoundType_MOB_CHICKENPLOP, 1.0f, (random->nextFloat() - random->nextFloat()) * 0.2f + 1.0f);
+			spawnAtLocation(Item::egg->id, !isBaby() ? random->nextInt(3)+1 : 1);
+			shedTime = random->nextInt(20 * 60 * 5) + 20 * 60 * 7;
+		}
+	}
 }
 
 void Lizard::defineSynchedData() 
@@ -69,12 +116,15 @@ void Lizard::addAdditonalSaveData(CompoundTag *tag)
 {
 	Animal::addAdditonalSaveData(tag);
 	tag->putBoolean(L"Tail", hasTail());
+	tag->putInt(L"ShedTime", shedTime);
+	tag->putInt(L"TailTime", tailTime);
 }
 
 void Lizard::readAdditionalSaveData(CompoundTag *tag) 
 {
 	Animal::readAdditionalSaveData(tag);
-	setTail(tag->getBoolean(L"Tail"));
+	shedTime = tag->getInt(L"ShedTime");
+	tailTime = tag->getInt(L"TailTime");
 }
 
 int Lizard::getAmbientSound() 
@@ -97,21 +147,9 @@ void Lizard::playStepSound(int xt, int yt, int zt, int t)
 	playSound(eSoundType_MOB_PIG_STEP, 0.15f, 1);
 }
 
-int Lizard::getDeathLoot() 
-{
-	if (this->isOnFire() ) return Item::porkChop_cooked->id;
-	return Item::porkChop_raw_Id;
-}
-
 void Lizard::dropDeathLoot(bool wasKilledByPlayer, int playerBonusLevel)
 {
-	int count = random->nextInt(3) + 1 + random->nextInt(1 + playerBonusLevel);
-
-	for (int i = 0; i < count; i++)
-	{
-		spawnAtLocation(Lizard::getDeathLoot(), 1);
-	}
-	if (hasTail()) spawnAtLocation(Item::saddle_Id, 1);
+	dropTail(nullptr);
 }
 
 bool Lizard::hasTail() 
